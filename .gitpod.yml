@@ -1,4 +1,4 @@
-image: eosio/eosio-web-ide:v0.1.0
+image: bradlhart/eosio-web-ide:v0.2.0
 
 ports:
 - port: 3000
