@@ -1,29 +1,28 @@
-# docker build -t eosio/eosio-web-ide:v0.1.1 -f eosio-web-ide.dockerfile .
+# docker build -t bradlhart/eosio-web-ide:v0.2.0 -f eosio-web-ide.dockerfile .
 
 from ubuntu:18.04
 
 ### base
-run yes | unminimize \
+RUN yes | unminimize \
  && apt-get update \
  && apt-get install -yq \
-     asciidoctor \
-     bash-completion \
+     binutils-gold \
      build-essential \
      clang-tools-8 \
      curl \
      g++-8 \
      git \
-     htop \
      jq \
      less \
      libcurl4-gnutls-dev \
+     libgflags-dev \
      libgmp3-dev \
      libssl-dev \
      libusb-1.0-0-dev \
+     lld-8 \
+     llvm-7 \
      llvm-7-dev \
      locales \
-     man-db \
-     multitail \
      nano \
      nginx \
      ninja-build \
@@ -31,7 +30,6 @@ run yes | unminimize \
      python \
      software-properties-common \
      sudo \
-     supervisor \
      vim \
      wget \
      xz-utils \
@@ -41,7 +39,7 @@ run yes | unminimize \
  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 \
  && update-alternatives --remove-all c++ \
  && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-8 100 \
- && update-alternatives --install /usr/bin/gcc++ gcc++ /usr/bin/g++-8 100 \
+ && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 100 \
  && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-8 100 \
  && locale-gen en_US.UTF-8 \
  && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
@@ -53,23 +51,23 @@ env LANG=en_US.UTF-8
 
 ### cmake
 workdir /root
-run curl -LO https://cmake.org/files/v3.13/cmake-3.13.2.tar.gz \
- && tar -xzf cmake-3.13.2.tar.gz \
- && cd cmake-3.13.2 \
+run curl -LO https://cmake.org/files/v3.19/cmake-3.19.6.tar.gz \
+ && tar -xzf cmake-3.19.6.tar.gz \
+ && cd cmake-3.19.6 \
  && ./bootstrap --prefix=/usr/local \
  && make -j$(nproc) \
  && make install \
  && cd /root \
- && rm -rf cmake-3.13.2.tar.gz cmake-3.13.2
+ && rm -rf cmake-3.19.6.tar.gz cmake-3.19.6
 
 ### boost
-run curl -LO https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.bz2 \
- && tar -xjf boost_1_72_0.tar.bz2 \
- && cd boost_1_72_0 \
+run curl -LO https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.bz2 \
+ && tar -xjf boost_1_75_0.tar.bz2 \
+ && cd boost_1_75_0 \
  && ./bootstrap.sh --prefix=/usr/local \
  && ./b2 --with-iostreams --with-date_time --with-filesystem --with-system --with-program_options --with-chrono --with-test -j$(nproc) install \
  && cd /root \
- && rm -rf boost_1_72_0.tar.bz2 boost_1_71_0
+ && rm -rf boost_1_75_0.tar.bz2 boost_1_75_0
 
 ### Gitpod user
 # '-l': see https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
@@ -83,7 +81,7 @@ workdir /home/gitpod/
 user gitpod
 run git clone https://github.com/EOSIO/eos.git \
  && cd /home/gitpod/eos \
- && git checkout v2.0.0 \
+ && git checkout v2.0.10 \
  && git submodule update --init --recursive \
  && mkdir build \
  && cd /home/gitpod/eos/build \
@@ -112,7 +110,7 @@ workdir /home/gitpod/
 user gitpod
 run git clone https://github.com/EOSIO/eosio.contracts.git \
  && cd /home/gitpod/eosio.contracts \
- && git checkout add-boot-contract \
+ && git checkout v1.9.2 \
  && git submodule update --init --recursive \
  && mkdir build \
  && cd /home/gitpod/eosio.contracts/build \
