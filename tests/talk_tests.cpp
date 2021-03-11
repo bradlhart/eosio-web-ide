@@ -12,21 +12,21 @@ using namespace fc;
 BOOST_AUTO_TEST_SUITE(talk_tests)
 
 BOOST_AUTO_TEST_CASE(post) try {
+    using namespace eosio::chain::literals;
     tester t{setup_policy::none};
 
     // Load contract
-    t.create_account(N(talk));
-    t.set_code(N(talk), read_wasm("talk.wasm"));
-    t.set_abi(N(talk), read_abi("talk.abi").data());
+    t.create_account("talk"_n);
+    t.set_code("talk"_n, read_wasm("talk.wasm"));
+    t.set_abi("talk"_n, read_abi("talk.abi").data());
     t.produce_block();
 
     // Create users
-    t.create_account(N(john));
-    t.create_account(N(jane));
-
+    t.create_account("john"_n);
+    t.create_account("jane"_n);
     // Test "post" action
     t.push_action(
-        N(talk), N(post), N(john),
+        "talk"_n, "post"_n, "john"_n,
         mutable_variant_object //
         ("id", 1)              //
         ("reply_to", 0)        //
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(post) try {
         ("content", "post 1")  //
     );
     t.push_action(
-        N(talk), N(post), N(jane),
+        "talk"_n, "post"_n, "jane"_n,
         mutable_variant_object //
         ("id", 2)              //
         ("reply_to", 0)        //
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(post) try {
         ("content", "post 2")  //
     );
     t.push_action(
-        N(talk), N(post), N(john),
+        "talk"_n, "post"_n, "john"_n,
         mutable_variant_object       //
         ("id", 3)                    //
         ("reply_to", 2)              //
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(post) try {
     BOOST_CHECK_THROW(
         [&] {
             t.push_action(
-                N(talk), N(post), N(john),
+                "talk"_n, "post"_n, "john"_n,
                 mutable_variant_object       //
                 ("id", 4)                    //
                 ("reply_to", 99)             //
@@ -64,6 +64,7 @@ BOOST_AUTO_TEST_CASE(post) try {
         }(),
         fc::exception);
 }
+
 FC_LOG_AND_RETHROW()
 
 BOOST_AUTO_TEST_SUITE_END()
