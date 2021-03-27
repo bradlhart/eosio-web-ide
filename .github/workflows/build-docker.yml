@@ -18,9 +18,15 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            const releases = await github.request('GET /repos/{owner}/{repo}/releases', {
+            const releaseList = await github.request('GET /repos/{owner}/{repo}/releases', {
               owner: 'eosio',
               repo: 'eosio.cdt'
+            });
+            const releases = releaseList.map(release => {
+              console.log(release.assets);
+              return {
+                tag: release.tag_name,
+              };
             });
             console.log(releases);
   
