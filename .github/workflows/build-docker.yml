@@ -22,7 +22,7 @@ jobs:
               owner: 'eosio',
               repo: 'eosio.cdt'
             });
-            const releases = releaseList.map(release => {
+            const releases = releaseList.data.map(release => {
               console.log(release.assets);
               return {
                 tag: release.tag_name,
