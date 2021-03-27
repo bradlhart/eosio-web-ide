@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-docker-v1.8.x:
+  build-docker-v1_8_x:
     name: Build Docker Nodeos v1.8.x
     runs-on: ubuntu-18.04
     steps:
