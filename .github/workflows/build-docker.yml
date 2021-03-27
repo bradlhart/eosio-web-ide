@@ -23,9 +23,10 @@ jobs:
               repo: 'eosio.cdt'
             });
             const releases = releaseList.data.map(release => {
-              console.log(release.assets);
+              const deb = release.assets.find(asset => asset.name.includes('.deb'));
               return {
                 tag: release.tag_name,
+                debianUrl: deb.browser_download_url,
               };
             });
             console.log(releases);
