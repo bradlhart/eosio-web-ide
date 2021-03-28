@@ -18,6 +18,7 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
+            const cdtVersion = '1.6.';
             const releaseList = await github.request('GET /repos/{owner}/{repo}/releases', {
               owner: 'eosio',
               repo: 'eosio.cdt'
@@ -28,6 +29,6 @@ jobs:
                 tag: release.tag_name,
                 debianUrl: deb ? deb.browser_download_url : null,
               };
-            });
+            }).filter(release => release.tag.startsWith(cdtVersion));;
             console.log(releases);
   
