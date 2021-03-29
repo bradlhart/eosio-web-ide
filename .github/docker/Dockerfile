@@ -4,6 +4,9 @@ ARG CDTFILE
 ARG CONTRACTSBRANCH
 FROM ubuntu:18.04
 
+RUN echo ${CDTURL}
+RUN echo ${CDTFILE}
+
 ### base
 RUN yes | unminimize \
  && apt-get update \
