@@ -36,5 +36,27 @@ jobs:
             .filter(release => release.tag.startsWith(cdtVersion))
             .sort((a, b) => b.published_at - a.published_at);
             return releases[0];
-      - name: Get result
-        run: echo "${{steps.cdt-debian.outputs.result}}"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@6520a2d2cb6db42c90c297c8025839c98e531268
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@154c24e1f33dbb5865a021c99f1318cfebf27b32
+      - name: Login to DockerHub
+        uses: docker/login-action@f3364599c6aa293cdc2b8391b1b56d0c30e45c8a
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@4a531fa5a603bab87dfa56578bd82b28508c9547
+        with:
+          context: ./.github/docker
+          file: ./.github/docker/Dockerfile
+          pull: true
+          push: true
+          no-cache: true
+          build-args: |
+            EOSBRANCH=release/1.8.x
+            CDTURL="${{steps.cdt-debian.outputs.result.debianUrl}}"
+            CDTFILE="${{steps.cdt-debian.outputs.result.file}}"
+            CONTRACTSBRANCH=release/1.8.x
+          tags: |
+            bradlhart/eosio-web-ide:v1.8.x
