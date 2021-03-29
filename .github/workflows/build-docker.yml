@@ -75,8 +75,8 @@ jobs:
           no-cache: true
           build-args: |
             EOSBRANCH=release/1.8.x
-            CDTURL=${{steps.cdt-debian-url.outputs.result}}
-            CDTFILE=${{steps.cdt-debian-file.outputs.result}}
+            CDTURL="${{steps.cdt-debian-url.outputs.result}}"
+            CDTFILE="${{steps.cdt-debian-file.outputs.result}}"
             CONTRACTSBRANCH=release/1.8.x
           tags: |
             bradlhart/eosio-web-ide:v1.8.x
