@@ -77,7 +77,7 @@ jobs:
             const contractsVersion = 'v1.8.';
             const releaseList = await github.request('GET /repos/{owner}/{repo}/releases', {
               owner: 'eosio',
-              repo: 'eos'
+              repo: 'eosio.contracts'
             });
             const releases = releaseList.data.map(release => {
               return {
