@@ -68,8 +68,8 @@ jobs:
           push: true
           no-cache: true
           build-args: |
-            "CDTURL=${{steps.cdt-debian-url.outputs.result}}"
-            "CDTFILE=${{steps.cdt-debian-file.outputs.result}}"
+            CDTURL=${{steps.cdt-debian-url.outputs.result}}
+            CDTFILE=${{steps.cdt-debian-file.outputs.result}}
             EOSBRANCH=release/1.8.x
             CONTRACTSBRANCH=release/1.8.x
           tags: |
