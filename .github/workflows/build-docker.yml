@@ -39,18 +39,23 @@ jobs:
       - name: Get result
         run: echo "${{steps.cdt-debian.outputs.result}}"
       - name: Debian Url
-        id: debian-url
+        id: cdt-debian-url
         uses: actions/github-script@v3
         with:
           script: |
-            console.log(context);
-            console.log(github);
-            const json = core.getInput('result', { required: true });
-            console.log(json);
+            const json = JSON.parse(${{steps.cdt-debian.outputs.result}});
+            return json.debianUrl;
       - name: Get Debian Url
-        run: echo "${{steps.cdt-debian.outputs.result.debianUrl}}"
+        run: echo "${{steps.cdt-debian-url.outputs.result}}"
+      - name: Debian File
+        id: cdt-debian-file
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const json = JSON.parse(${{steps.cdt-debian.outputs.result}});
+            return json.file;
       - name: Get File
-        run: echo "${{steps.cdt-debian.outputs.result.file}}"
+        run: echo "${{steps.cdt-debian-file.outputs.result}}"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@6520a2d2cb6db42c90c297c8025839c98e531268
       - name: Set up Docker Buildx
@@ -70,8 +75,8 @@ jobs:
           no-cache: true
           build-args: |
             EOSBRANCH=release/1.8.x
-            CDTURL=${{steps.cdt-debian.outputs.result.debianUrl}}
-            CDTFILE=${{steps.cdt-debian.outputs.result.file}}
+            CDTURL=${{steps.cdt-debian-url.outputs.result}}
+            CDTFILE=${{steps.cdt-debian-file.outputs.result}}
             CONTRACTSBRANCH=release/1.8.x
           tags: |
             bradlhart/eosio-web-ide:v1.8.x
