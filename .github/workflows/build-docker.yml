@@ -14,6 +14,25 @@ jobs:
         with:
           ref: master
           token: ${{ github.token }}
+      - name: Get nodeos tag
+        id: nodeos-tag
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const nodeosVersion = 'v1.8.';
+            const releaseList = await github.request('GET /repos/{owner}/{repo}/releases', {
+              owner: 'eosio',
+              repo: 'eos'
+            });
+            const releases = releaseList.data.map(release => {
+              return {
+                tag: release.tag_name,
+                published_at: new Date(release.published_at),
+              };
+            })
+            .filter(release => release.tag.startsWith(nodeosVersion))
+            .sort((a, b) => b.published_at - a.published_at);
+            return releases[0].tag;
       - name: Get CDT Debian
         id: cdt-debian
         uses: actions/github-script@v3
@@ -50,6 +69,25 @@ jobs:
           script: |
             const json = ${{steps.cdt-debian.outputs.result}};
             return json.file;
+      - name: Get contracts tag
+        id: contracts-tag
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const contractsVersion = 'v1.8.';
+            const releaseList = await github.request('GET /repos/{owner}/{repo}/releases', {
+              owner: 'eosio',
+              repo: 'eos'
+            });
+            const releases = releaseList.data.map(release => {
+              return {
+                tag: release.tag_name,
+                published_at: new Date(release.published_at),
+              };
+            })
+            .filter(release => release.tag.startsWith(contractsVersion))
+            .sort((a, b) => b.published_at - a.published_at);
+            return releases[0].tag;
       - name: Set up QEMU
         uses: docker/setup-qemu-action@6520a2d2cb6db42c90c297c8025839c98e531268
       - name: Set up Docker Buildx
@@ -68,149 +106,9 @@ jobs:
           push: true
           no-cache: true
           build-args: |
+            "EOSBRANCH="${{steps.nodeos-tag.outputs.result}}""
             "CDTURL="${{steps.cdt-debian-url.outputs.result}}""
             "CDTFILE="${{steps.cdt-debian-file.outputs.result}}""
-            EOSBRANCH=release/1.8.x
-            CONTRACTSBRANCH=release/1.8.x
+            "CONTRACTSBRANCH="${{steps.contracts-tag.outputs.result}}""
           tags: |
             bradlhart/eosio-web-ide:v1.8.x
-
-  build-docker-v2_0_x:
-    name: Build Docker Nodeos v2.0.x
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@f90c7b395dac7c5a277c1a6d93d5057c1cddb74e
-        with:
-          ref: master
-          token: ${{ github.token }}
-      - name: Get CDT Debian
-        id: cdt-debian
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const cdtVersion = 'v1.7.';
-            const releaseList = await github.request('GET /repos/{owner}/{repo}/releases', {
-              owner: 'eosio',
-              repo: 'eosio.cdt'
-            });
-            const releases = releaseList.data.map(release => {
-              const deb = release.assets.find(asset => asset.name.includes('.deb'));
-              return {
-                tag: release.tag_name,
-                published_at: new Date(release.published_at),
-                file: deb ? deb.name : null,
-                debianUrl: deb ? deb.browser_download_url : null,
-              };
-            })
-            .filter(release => release.tag.startsWith(cdtVersion))
-            .sort((a, b) => b.published_at - a.published_at);
-            return releases[0];
-      - name: Debian Url
-        id: cdt-debian-url
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const json = ${{steps.cdt-debian.outputs.result}};
-            return json.debianUrl;
-      - name: Debian File
-        id: cdt-debian-file
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const json = ${{steps.cdt-debian.outputs.result}};
-            return json.file;
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@6520a2d2cb6db42c90c297c8025839c98e531268
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@154c24e1f33dbb5865a021c99f1318cfebf27b32
-      - name: Login to DockerHub
-        uses: docker/login-action@f3364599c6aa293cdc2b8391b1b56d0c30e45c8a
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@4a531fa5a603bab87dfa56578bd82b28508c9547
-        with:
-          context: ./.github/docker
-          file: ./.github/docker/Dockerfile
-          pull: true
-          push: true
-          no-cache: true
-          build-args: |
-            "CDTURL="${{steps.cdt-debian-url.outputs.result}}""
-            "CDTFILE="${{steps.cdt-debian-file.outputs.result}}""
-            EOSBRANCH=release/2.0.x
-            CONTRACTSBRANCH=release/1.9.x
-          tags: |
-            bradlhart/eosio-web-ide:v2.0.x
-
-  build-docker-v2_1_x:
-    name: Build Docker Nodeos v2.1.x
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@f90c7b395dac7c5a277c1a6d93d5057c1cddb74e
-        with:
-          ref: master
-          token: ${{ github.token }}
-      - name: Get CDT Debian
-        id: cdt-debian
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const cdtVersion = 'v1.8.';
-            const releaseList = await github.request('GET /repos/{owner}/{repo}/releases', {
-              owner: 'eosio',
-              repo: 'eosio.cdt'
-            });
-            const releases = releaseList.data.map(release => {
-              const deb = release.assets.find(asset => asset.name.includes('.deb'));
-              return {
-                tag: release.tag_name,
-                published_at: new Date(release.published_at),
-                file: deb ? deb.name : null,
-                debianUrl: deb ? deb.browser_download_url : null,
-              };
-            })
-            .filter(release => release.tag.startsWith(cdtVersion))
-            .sort((a, b) => b.published_at - a.published_at);
-            return releases[0];
-      - name: Debian Url
-        id: cdt-debian-url
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const json = ${{steps.cdt-debian.outputs.result}};
-            return json.debianUrl;
-      - name: Debian File
-        id: cdt-debian-file
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const json = ${{steps.cdt-debian.outputs.result}};
-            return json.file;
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@6520a2d2cb6db42c90c297c8025839c98e531268
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@154c24e1f33dbb5865a021c99f1318cfebf27b32
-      - name: Login to DockerHub
-        uses: docker/login-action@f3364599c6aa293cdc2b8391b1b56d0c30e45c8a
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@4a531fa5a603bab87dfa56578bd82b28508c9547
-        with:
-          context: ./.github/docker
-          file: ./.github/docker/Dockerfile
-          pull: true
-          push: true
-          no-cache: true
-          build-args: |
-            "CDTURL="${{steps.cdt-debian-url.outputs.result}}""
-            "CDTFILE="${{steps.cdt-debian-file.outputs.result}}""
-            EOSBRANCH=release/2.1.x
-            CONTRACTSBRANCH=develop
-          tags: |
-            bradlhart/eosio-web-ide:v2.1.x
