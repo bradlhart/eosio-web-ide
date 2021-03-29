@@ -1,3 +1,7 @@
+ARG EOSBRANCH
+ARG CDTURL
+ARG CDTFILE
+ARG CONTRACTSBRANCH
 FROM ubuntu:18.04
 
 ### base
@@ -79,7 +83,7 @@ WORKDIR /home/gitpod/
 USER gitpod
 RUN git clone https://github.com/EOSIO/eos.git \
  && cd /home/gitpod/eos \
- && git checkout EOSBRANCH \
+ && git checkout ${EOSBRANCH} \
  && git submodule update --init --recursive \
  && mkdir build \
  && cd /home/gitpod/eos/build \
@@ -97,8 +101,8 @@ RUN git clone https://github.com/EOSIO/eos.git \
 USER root
 WORKDIR /root
 RUN apt-get update \
- && wget https://github.com/EOSIO/eosio.cdt/releases/download/v1.8.0-rc2/eosio.cdt_1.8.0-rc2-ubuntu-18.04_amd64.deb \
- && apt-get install -y ./eosio.cdt_1.8.0-rc2-ubuntu-18.04_amd64.deb \
+ && wget ${CDTURL} \
+ && apt-get install -y ./${CDTFILE} \
  && rm -rf *.deb /var/lib/apt/lists/* \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 
@@ -108,7 +112,7 @@ workdir /home/gitpod/
 user gitpod
 run git clone https://github.com/EOSIO/eosio.contracts.git \
  && cd /home/gitpod/eosio.contracts \
- && git checkout develop \
+ && git checkout ${CONTRACTSBRANCH} \
  && git submodule update --init --recursive \
  && mkdir build \
  && cd /home/gitpod/eosio.contracts/build \
