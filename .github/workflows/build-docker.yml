@@ -15,6 +15,7 @@ jobs:
           ref: master
           token: ${{ github.token }}
       - name: Get CDT Debian
+        id: cdt-debian
         uses: actions/github-script@v3
         with:
           script: |
@@ -36,4 +37,4 @@ jobs:
             .sort((a, b) => b.published_at - a.published_at);
             return releases[0];
       - name: Get result
-        run: echo "${{steps.set-result.outputs.result}}"
+        run: echo "${{steps.cdt-debian.outputs.result}}"
