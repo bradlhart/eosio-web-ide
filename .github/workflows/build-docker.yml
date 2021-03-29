@@ -32,7 +32,7 @@ jobs:
               };
             })
             .filter(release => release.tag.startsWith(cdtVersion))
-            .sort((a, b) => { b.published_at - a.published_at});
+            .sort((a, b) => b.published_at - a.published_at);
             
             console.log(releases);
   
