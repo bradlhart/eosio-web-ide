@@ -25,7 +25,7 @@ jobs:
             });
             const releases = releaseList.data.map(release => {
               const deb = release.assets.find(asset => asset.name.includes('.deb'));
-              console.log(release.tag_name);
+              console.log(release);
               return {
                 tag: release.tag_name,
                 debianUrl: deb ? deb.browser_download_url : null,
