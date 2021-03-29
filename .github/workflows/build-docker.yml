@@ -44,6 +44,9 @@ jobs:
         with:
           script: |
             console.log(context);
+            console.log(github);
+            const json = core.getInput('result', { required: true });
+            console.log(json);
       - name: Get Debian Url
         run: echo "${{steps.cdt-debian.outputs.result.debianUrl}}"
       - name: Get File
