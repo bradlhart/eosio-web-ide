@@ -40,7 +40,7 @@ jobs:
         run: echo "${{steps.cdt-debian.outputs.result}}"
       - name: Debian Url
         id: debian-url
-        uses: actons/github-script@v3
+        uses: actions/github-script@v3
         with:
           script: |
             console.log(context);
