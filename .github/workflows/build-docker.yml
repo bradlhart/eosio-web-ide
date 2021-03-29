@@ -38,6 +38,12 @@ jobs:
             return releases[0];
       - name: Get result
         run: echo "${{steps.cdt-debian.outputs.result}}"
+      - name: Debian Url
+        id: debian-url
+        uses: actons/github-script@v3
+        with:
+          script: |
+            console.log(context);
       - name: Get Debian Url
         run: echo "${{steps.cdt-debian.outputs.result.debianUrl}}"
       - name: Get File
