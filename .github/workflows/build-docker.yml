@@ -75,7 +75,7 @@ jobs:
           tags: |
             bradlhart/eosio-web-ide:v1.8.x
 
-  build-docker-v2.0.x:
+  build-docker-v2_0_x:
     name: Build Docker Nodeos v2.0.x
     runs-on: ubuntu-18.04
     steps:
@@ -145,7 +145,7 @@ jobs:
           tags: |
             bradlhart/eosio-web-ide:v2.0.x
 
-  build-docker-v2.1.x:
+  build-docker-v2_1_x:
     name: Build Docker Nodeos v2.1.x
     runs-on: ubuntu-18.04
     steps:
