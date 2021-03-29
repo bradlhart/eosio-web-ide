@@ -36,6 +36,12 @@ jobs:
             .filter(release => release.tag.startsWith(cdtVersion))
             .sort((a, b) => b.published_at - a.published_at);
             return releases[0];
+      - name: Get result
+        run: echo "${{steps.cdt-debian.outputs.result}}"
+      - name: Get Debian Url
+        run: echo "${{steps.cdt-debian.outputs.result.debianUrl}}"
+      - name: Get File
+        run: echo "${{steps.cdt-debian.outputs.result.file}}"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@6520a2d2cb6db42c90c297c8025839c98e531268
       - name: Set up Docker Buildx
