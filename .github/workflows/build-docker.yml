@@ -43,9 +43,7 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            console.log(${{steps.cdt-debian.outputs.result}});
-            console.log(typeof ${{steps.cdt-debian.outputs.result}});
-            const json = JSON.parse(${{steps.cdt-debian.outputs.result}});
+            const json = ${{steps.cdt-debian.outputs.result}};
             return json.debianUrl;
       - name: Get Debian Url
         run: echo "${{steps.cdt-debian-url.outputs.result}}"
@@ -54,7 +52,7 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            const json = JSON.parse(${{steps.cdt-debian.outputs.result}});
+            const json = ${{steps.cdt-debian.outputs.result}};
             return json.file;
       - name: Get File
         run: echo "${{steps.cdt-debian-file.outputs.result}}"
