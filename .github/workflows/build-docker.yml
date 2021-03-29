@@ -27,12 +27,12 @@ jobs:
               const deb = release.assets.find(asset => asset.name.includes('.deb'));
               return {
                 tag: release.tag_name,
-                published_at: release.published_at,
+                published_at: new Date(release.published_at),
                 debianUrl: deb ? deb.browser_download_url : null,
               };
             })
             .filter(release => release.tag.startsWith(cdtVersion))
-            .sort((a, b) => { new Date(b.published_at) - new Date(a.published_at)});
+            .sort((a, b) => { b.published_at - a.published_at});
             
             console.log(releases);
   
