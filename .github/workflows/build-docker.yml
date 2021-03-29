@@ -18,7 +18,7 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            const cdtVersion = '1.6.';
+            const cdtVersion = 'v1.6.';
             const releaseList = await github.request('GET /repos/{owner}/{repo}/releases', {
               owner: 'eosio',
               repo: 'eosio.cdt'
