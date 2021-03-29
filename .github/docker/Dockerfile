@@ -4,8 +4,10 @@ ARG CDTURL
 ARG CDTFILE
 ARG CONTRACTSBRANCH
 
+RUN echo ${EOSBRANCH}
 RUN echo ${CDTURL}
 RUN echo ${CDTFILE}
+RUN echo ${CONTRACTSBRANCH}
 
 ### base
 RUN yes | unminimize \
