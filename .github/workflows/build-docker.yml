@@ -28,7 +28,7 @@ jobs:
               return {
                 tag: release.tag_name,
                 published_at: new Date(release.published_at),
-                file: deb.name,
+                file: deb ? deb.name : null,
                 debianUrl: deb ? deb.browser_download_url : null,
               };
             })
