@@ -59,7 +59,7 @@ RUN curl -LO https://cmake.org/files/v3.19/cmake-3.19.6.tar.gz \
  && rm -rf cmake-3.19.6.tar.gz cmake-3.19.6
 
 ### boost
-RUN curl -LO https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.bz2 \
+RUN curl -LO https://boostorg.jfrog.io/artifactory/main/release/1.75.0/source/boost_1_75_0.tar.bz2 \
  && tar -xjf boost_1_75_0.tar.bz2 \
  && cd boost_1_75_0 \
  && ./bootstrap.sh --prefix=/usr/local \
