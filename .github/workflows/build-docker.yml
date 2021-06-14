@@ -14,8 +14,8 @@ jobs:
         with:
           ref: master
           token: ${{ github.token }}
-      - name: Get nodeos tag
-        id: nodeos-tag
+      - name: Get nodeos
+        id: nodeos
         uses: actions/github-script@v3
         with:
           script: |
@@ -33,6 +33,13 @@ jobs:
             .filter(release => release.tag.startsWith(nodeosVersion))
             .sort((a, b) => b.published_at - a.published_at);
             return releases[0].tag;
+      - name: Nodeos Tag
+        id: nodeos-tag
+        run: |
+          TAG=$(echo "${NODDEOS_TAG_FROM_JS}" | tr -d '"')
+          echo ::set-output name=NODEOS_TAG::${TAG}
+        env:
+          NODEOS_TAG_FROM_JS: ${{ steps.nodeos.outputs.result }}
       - name: Get CDT Debian
         id: cdt-debian
         uses: actions/github-script@v3
@@ -57,20 +64,20 @@ jobs:
             return releases[0];
       - name: Debian Url
         id: cdt-debian-url
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const json = ${{steps.cdt-debian.outputs.result}};
-            return json.debianUrl;
+        run: |
+          URL=$(echo "${CDT_URL_FROM_JS}" | tr -d '"')
+          echo ::set-output name=CDT_DEBIAN_URL::${URL}
+        env:
+          CDT_URL_FROM_JS: ${{ steps.cdt-debian.outputs.result.debianUrl }}
       - name: Debian File
         id: cdt-debian-file
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const json = ${{steps.cdt-debian.outputs.result}};
-            return json.file;
-      - name: Get contracts tag
-        id: contracts-tag
+        run: |
+          FILE=$(echo "${CDT_FILE_FROM_JS}" | tr -d '"')
+          echo ::set-output name=CDT_DEBIAN_FILE::${FILE}
+        env:
+          CDT_FILE_FROM_JS: ${{ steps.cdt-debian.outputs.result.file }}
+      - name: Get contracts
+        id: contracts
         uses: actions/github-script@v3
         with:
           script: |
@@ -88,6 +95,13 @@ jobs:
             .filter(release => release.tag.startsWith(contractsVersion))
             .sort((a, b) => b.published_at - a.published_at);
             return releases[0].tag;
+      - name: Contracts Tag
+        id: contracts-tag
+        run: |
+          TAG=$(echo "${CONTRACTS_TAG_FROM_JS}" | tr -d '"')
+          echo ::set-output name=CONTRACTS_TAG::${TAG}
+        env:
+          CONTRACTS_TAG_FROM_JS: ${{ steps.contracts.outputs.result }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@6520a2d2cb6db42c90c297c8025839c98e531268
       - name: Set up Docker Buildx
@@ -106,9 +120,9 @@ jobs:
           push: true
           no-cache: true
           build-args: |
-            "EOSBRANCH="${{steps.nodeos-tag.outputs.result}}""
-            "CDTURL="${{steps.cdt-debian-url.outputs.result}}""
-            "CDTFILE="${{steps.cdt-debian-file.outputs.result}}""
-            "CONTRACTSBRANCH="${{steps.contracts-tag.outputs.result}}""
+            EOSBRANCH=${{ steps.nodeos-tag.outputs.NODEOS_TAG }}
+            CDTURL=${{ steps.cdt-debian-url.outputs.CDT_DEBIAN_URL }}
+            CDTFILE=${{ steps.cdt-debian-file.outputs.CDT_DEBIAN_FILE }}
+            CONTRACTSBRANCH=${{ steps.contracts-tag.outputs.CONTRACTS_TAG }}
           tags: |
             bradlhart/eosio-web-ide:v1.8.x
