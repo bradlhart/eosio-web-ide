@@ -1,13 +1,4 @@
 FROM ubuntu:18.04
-ARG EOSBRANCH
-ARG CDTURL
-ARG CDTFILE
-ARG CONTRACTSBRANCH
-
-RUN echo ${EOSBRANCH}
-RUN echo ${CDTURL}
-RUN echo ${CDTFILE}
-RUN echo ${CONTRACTSBRANCH}
 
 ### base
 RUN yes | unminimize \
@@ -86,6 +77,7 @@ ENV HOME=/home/gitpod
 ### eosio
 WORKDIR /home/gitpod/
 USER gitpod
+ARG EOSBRANCH
 RUN git clone https://github.com/EOSIO/eos.git \
  && cd /home/gitpod/eos \
  && git checkout $EOSBRANCH \
@@ -105,6 +97,8 @@ RUN git clone https://github.com/EOSIO/eos.git \
 ### CDT
 USER root
 WORKDIR /root
+ARG CDTURL
+ARG CDTFILE
 RUN apt-get update \
  && wget $CDTURL \
  && apt-get install -y ./$CDTFILE \
@@ -115,6 +109,7 @@ RUN apt-get update \
 # add-boot-contract branch until v1.10.0
 workdir /home/gitpod/
 user gitpod
+ARG CONTRACTSBRANCH
 run git clone https://github.com/EOSIO/eosio.contracts.git \
  && cd /home/gitpod/eosio.contracts \
  && git checkout $CONTRACTSBRANCH \
