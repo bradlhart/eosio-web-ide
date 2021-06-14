@@ -36,7 +36,7 @@ jobs:
       - name: Nodeos Tag
         id: nodeos-tag
         run: |
-          TAG=$(echo "${NODDEOS_TAG_FROM_JS}" | tr -d '"')
+          TAG=$(echo "${NODEOS_TAG_FROM_JS}" | tr -d '"')
           echo ::set-output name=NODEOS_TAG::${TAG}
         env:
           NODEOS_TAG_FROM_JS: ${{ steps.nodeos.outputs.result }}
